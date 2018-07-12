@@ -24,7 +24,7 @@ def send_recieve(conn):
 
     while True:
         data = conn.recv(4096)  #something about size of data buffer?
-        input = data.decode('utf-8')
+        input = str(data.decode('utf-8'))
         input = input[0:len(input)-2]
 
         #these are seperated for now just to get it working
@@ -39,7 +39,7 @@ def send_recieve(conn):
         conn.sendall(str.encode('\n'))
             #prints statement on guest side
 
-        if (input.lower()[0] == 'z'):
+        if (input.lower() == 'z'):
             #Terminates conn if user inputs 'z' and exits main function loop
             print("Connection ended")
             conn.close()
