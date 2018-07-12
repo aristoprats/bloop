@@ -25,18 +25,18 @@ def send_recieve(conn):
     while True:
         data = conn.recv(4096)  #something about size of data buffer?
         input = str(data.decode('utf-8'))
-        input = input[0:len(input)-2]
+        print (data,'----',input)
+        #input = input[0:len(input)-2]
 
         #these are seperated for now just to get it working
-        guest_output = 'Your input was ' + input
+        guest_output = '\r Your input was ' + input
         host_output =  "Guests input was " + input
 
         if not data:
             print("err: missing data")
-        print(host_output)
+        #print(host_output)
             #prints statement on host side
         conn.sendall(str.encode(guest_output))
-        conn.sendall(str.encode('\n'))
             #prints statement on guest side
 
         if (input.lower() == 'z'):
