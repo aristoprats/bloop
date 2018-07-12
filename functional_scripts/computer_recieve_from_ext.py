@@ -5,7 +5,7 @@ Purpose: recieves inputs from external terminal (same machine), prints inputs
 
 Definitions:
 host - where this script is being run
-guest - terminal where the connection is made from
+guest - terminal where the conn is made from
 
 Exit Mode: press 'z' on script side
 
@@ -18,31 +18,13 @@ import socket
 import sys
 from _thread import *
 
-#####Global Variables
-host = ''  #left blank to refer to localhost for now
-port = 5555     #random port
-max_connections = 5
-encoding = 'utf-8'    #used for encoding and decoding late
-active = True
-
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #initializes connection point as (tcp,synchronous)
-
-print("Waiting for Connection")
-
-try:
-    s.bind((host,port))
-except socket.error as error:
-    print(str(error))         #prints out error for troubleshooting
-
-s.listen(max_connections)  #limits max number of queued max_connections
 
 def send_recieve(conn):
     conn.send(str.encode("Enter input \n"))
 
     while True:
         data = conn.recv(4096)  #something about size of data buffer?
-        input = data.decode(encoding)
+        input = data.decode('utf-8')
 
         #these are seperated for now just to get it working
         guest_output = 'Your input was ' + input
@@ -57,17 +39,39 @@ def send_recieve(conn):
             #prints statement on guest side
         conn.sendall(str.encode('\n'))
 
-        if (input.lower() == 'z'):
-            #Terminates connection if user inputs 'z' and exits main function loop
+        if (input.lower()[0] == 'z'):
+            #Terminates conn if user inputs 'z' and exits main function loop
             print("Connection ended")
             conn.close()
             active = False
-            break
+            return
 
-while (active == True):
-    conn, addr = s.accept()
-        #accepts a connection as it comes in, returns (connection, address)
-    print("Connection to ",addr[0]," initialized at ", addr[1])
 
-    start_new_thread(send_recieve,(conn,))
-        #requires input of 2 variables with 1 left empty for ......reasons?
+def main():
+    host = ''  #left blank to refer to localhost for now
+    port = 5555     #random port
+    max_conns = 5
+    active = True
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #initializes conn point as (tcp,synchronous)
+
+    print("Waiting for Connection")
+
+    try:
+        s.bind((host,port))
+    except socket.error as error:
+        print(str(error))         #prints out error for troubleshooting
+
+    s.listen(max_conns)  #limits max number of queued max_conns
+    while (active == True):
+        conn, addr = s.accept()
+            #accepts a conn as it comes in, returns (conn, address)
+        print("Connection to ",addr[0]," initialized at ", addr[1])
+
+        start_new_thread(send_recieve,(conn,))
+            #requires input of 2 variables with 1 left empty for ......reasons?
+
+
+if __name__ == '__main__':
+    main()
