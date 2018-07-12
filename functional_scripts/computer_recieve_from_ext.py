@@ -25,19 +25,19 @@ def send_recieve(conn):
     while True:
         data = conn.recv(4096)  #something about size of data buffer?
         input = data.decode('utf-8')
+        input = input[0:len(input)-2]
 
         #these are seperated for now just to get it working
         guest_output = 'Your input was ' + input
         host_output =  "Guests input was " + input
 
         if not data:
-            break
+            print("err: missing data")
         print(host_output)
             #prints statement on host side
-        conn.sendall(str.encode('\n'))
         conn.sendall(str.encode(guest_output))
-            #prints statement on guest side
         conn.sendall(str.encode('\n'))
+            #prints statement on guest side
 
         if (input.lower()[0] == 'z'):
             #Terminates conn if user inputs 'z' and exits main function loop
@@ -62,6 +62,7 @@ def main():
         s.bind((host,port))
     except socket.error as error:
         print(str(error))         #prints out error for troubleshooting
+        return
 
     s.listen(max_conns)  #limits max number of queued max_conns
     while (active == True):
