@@ -8,6 +8,7 @@ host - where this script is being run
 guest - terminal where the connection is made from
 
 Exit Mode: press 'z' on script side
+
 terminal prompt: telnet localhost 5555
 
 Requires 2 terminals open
@@ -36,8 +37,8 @@ except socket.error as error:
 
 s.listen(max_connections)  #limits max number of queued max_connections
 
-def send_recieve(connection):
-    connection.send(str.encode("Enter input \n"))
+def send_recieve(conn):
+    conn.send(str.encode("Enter input \n"))
 
     while True:
         data = conn.recv(4096)  #something about size of data buffer?
