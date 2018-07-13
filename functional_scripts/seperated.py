@@ -17,6 +17,8 @@ Requires 2 terminals open
 import socket
 import sys
 from _thread import *
+import threading
+import time
 
 '''(1)
 def receive_host(conn):
@@ -68,9 +70,26 @@ def send_host(conn):
             break
 '''
 
+def worker_host():
+    tick = 0
+    while True:
+        print('Tick: ', tick, '\t', threading.currentThread().getName)
+        tick += 1
+        time.sleep(1)
+
+def worker_guest(conn):
+    tick = 0
+    while True:
+        outbound = 'Tick: ' + str(tick) + '\n'
+        conn.sendall(str.encode(outbound))
+        tick += 1
+        time.sleep(1)
+
+
+
 def main():
     host = ''
-    port = 5551
+    port = 5552
     max_conns = 5
 
     s= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -93,6 +112,13 @@ def main():
             #starts thread for host to recieve from guest
         #(2) start_new_thread(send_host,(conn,))
             #starts thread for guest to receive from host
+        for i in range(1):
+            t= threading.Thread(target = worker_host)
+            w = threading.Thread(target = worker_guest, args =(conn,))
+            t.daemon = True
+            w.daemon = True
+            t.start()
+            w.start()
 
 if __name__ == '__main__':
     main()
