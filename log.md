@@ -2,6 +2,6 @@
 
 ## TODO
 
-+live stream input? prats explain more on this.
+*live stream input? prats explain more on this.
 
 ## Other Notes
