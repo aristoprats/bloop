@@ -19,7 +19,6 @@ def create_connection():
 
 def guest_side(guest):
     '''Client side handler for both sending and recieving data
-        \# FIXME: CURRENTLY FUCKS UP IF YOU RECIEVE A MESSAGE WHILE TYPING
     '''
     username = guest.recv(buffer_size).decode("utf8")
     username = username[0:len(username)-2]
@@ -28,7 +27,7 @@ def guest_side(guest):
     message_welcome = 'Welcome %s, to exit type "[exit]"\n' %username
     guest.send(bytes(message_welcome, "utf8"))
         #\# FIXME: look into using encode and decode, easier for encryption
-    msg_connected = "%s has connected" %username
+    msg_connected = "%s has connected\n" %username
     broadcast(bytes(msg_connected, "utf8"))
     guests[guest] = username
 
@@ -37,30 +36,27 @@ def guest_side(guest):
         msg_fixed = str.encode((str( msg_recieved.decode("utf-8"))))
 
         if msg_fixed != b'[exit]\r\n':
-            broadcast(msg_fixed, username+": ")
+            broadcast(msg_fixed, '\n'+username+": ")
             print(msg_fixed)
         else:
-            guest.send(bytes("[exit]", "utf8"))
+            guest.send(bytes("[exit]\n", "utf8"))
             guest.close()
                 #terminates guest thread to conserve system memory
                 #\# FIXME: Currently disposes of all data, find way to store
             del guests[guest]
             del addresses[guest]
-            broadcast(bytes("%s has left the chat." %username, "utf8"))
+            broadcast(bytes("%s has left the chat.\n" %username, "utf8"))
             return
 
-def broadcast(msg, prefix=""):
+def broadcast(msg, prefix="\n"):
     print((bytes(prefix, "utf8")+msg))
     '''adding the prefix empty string seems to make it work for some reason?
         WILL not work if that value is just left blank'''
     for connection in guests:
-        #\# FIXME: Check if sendall is more efficient than for loop
         connection.send(bytes(prefix, "utf8")+msg)
 
 guests = {}
 addresses = {}
-
-#\# FIXME: Make these interchangeable, currently fixed for easy testing
 
 ################ Initialize Globals
 host = ''
