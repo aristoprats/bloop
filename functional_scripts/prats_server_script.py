@@ -19,12 +19,13 @@ def create_connection():
 
 def guest_side(guest):
     '''Client side handler for both sending and recieving data
-
         \# FIXME: CURRENTLY FUCKS UP IF YOU RECIEVE A MESSAGE WHILE TYPING
     '''
     username = guest.recv(buffer_size).decode("utf8")
+    username = username[0:len(username)-2]
+    print(username)
         #makes tagging people a lot easier than knownig IPs
-    message_welcome = 'Welcome %s, to exit type "[exit]"' %username
+    message_welcome = 'Welcome %s, to exit type "[exit]"\n' %username
     guest.send(bytes(message_welcome, "utf8"))
         #\# FIXME: look into using encode and decode, easier for encryption
     msg_connected = "%s has connected" %username
@@ -33,10 +34,9 @@ def guest_side(guest):
 
     while True:
         msg_recieved = guest.recv(buffer_size)
-        msg_fixed = str.encode((str('\n'+ msg_recieved.decode("utf-8"))))
+        msg_fixed = str.encode((str( msg_recieved.decode("utf-8"))))
 
-
-        if msg_fixed != b'\n[exit]\r\n':
+        if msg_fixed != b'[exit]\r\n':
             broadcast(msg_fixed, username+": ")
             print(msg_fixed)
         else:
@@ -45,9 +45,9 @@ def guest_side(guest):
                 #terminates guest thread to conserve system memory
                 #\# FIXME: Currently disposes of all data, find way to store
             del guests[guest]
-                #dexindexes guest
+            del addresses[guest]
             broadcast(bytes("%s has left the chat." %username, "utf8"))
-            break
+            return
 
 def broadcast(msg, prefix=""):
     print((bytes(prefix, "utf8")+msg))
