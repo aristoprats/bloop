@@ -16,7 +16,7 @@ The short term goal is more about making a chat application?
 * README.md
     * [ ] still needs updating on the about section
 * f/prats_server_script.py
-	* [ ] Look into RSA encryption
+	* [ ] Look into [RSA](https://medium.com/@ismailakkila/black-hat-python-encrypt-and-decrypt-with-rsa-cryptography-bd6df84d65bc) encryption
 	* [ ] If you want to keep the contents of a chat the best way for that is to use a databse server
 	* [ ] Make a host/port input, you can default this to a certain value if you want testing to go easily
 
