@@ -1,0 +1,96 @@
+#include <LiquidCrystal.h>
+
+//Pin assignments
+#define rs 12
+#define en 11
+#define d4 5
+#define d5 4
+#define d6 3
+#define d7 2
+#define potentiometer A0
+#define V0 10
+#define button 13
+#define LED 8
+
+//Globals
+int potread = 0;
+int i = 5;
+int j = 0;
+
+long counter = 0;
+
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+char msg[] = {'h','e','l','l','o'};
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(potentiometer, INPUT);
+  pinMode(button, INPUT);
+  pinMode(V0, OUTPUT);
+  pinMode(LED, OUTPUT);
+
+  lcd.begin(16,2);
+  lcd.setCursor(0,0);
+  lcd.clear();
+
+  potread = analogRead(potentiometer);
+
+  Serial.begin(9600);
+}
+
+void background_contrast(){
+  //analogWrite(V0,map(analogRead(potread), 0, 1023, 0, 255));
+  analogWrite(V0, 115);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  background_contrast();
+  potread = analogRead(potentiometer);
+
+  int Delay = map(potread,0,1023,400,25);
+  delay(Delay);
+
+
+  if (i > 9) {
+    i = 5;
+  }
+
+  if (j > 4) {
+    j = 0;
+    lcd.clear();
+  }
+
+    lcd.setCursor(0,0);
+    lcd.print(potread);
+
+    lcd.setCursor(0,1);
+    lcd.print(map(potread,0,1023,0,255));
+
+    lcd.setCursor(i,0);
+    lcd.print(msg[j]);
+
+    lcd.setCursor(11,0);
+    lcd.print(Delay);
+
+    i++;
+    j++;
+    counter++;
+
+    if(Serial.available() > 0){
+      char val = Serial.read();
+      lcd.setCursor(5,1);
+      lcd.print(val);
+
+      if(val == '1'){
+        digitalWrite(LED, HIGH);
+      }
+      else if (val == '0'){
+        digitalWrite(LED, LOW);
+      }
+    }
+    else{
+        lcd.setCursor(5,1);
+        lcd.print("NO SERIAL");
+    }
+}
