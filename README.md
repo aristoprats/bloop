@@ -5,24 +5,19 @@ The short term goal is more about making a chat application?
 
 ## TODO
 
-* README.md
-	* [ ] update the about section of this file
+17/7
+
 * f/prats_server_script.py
-	* [ ] Look into using encode and decode, easier for encryption
-	      - Going to look into how to implement an SSH protocol for a bit more security
 	* [x] Make Input and Output independent as receiving a message can interrupt input.
-	      - Seems to be sending alright as you mentioned in Issues?
-	* [ ] Currently disposes of all data, find a way to store (line 46) -- I don't get it, what
-data?
-				- As in the messages aren't currently stored outside of the terminal so
-					we can't recall messages (one of the later goals) aside from what's the
-					most recently received. The MCs won't have access to the terminal to pull
-					past messages
 	* [x] Check if sendall is more efficient than a for loop (line 57) -- [socket.sendall](https://docs.python.org/3/library/socket.html) doesn't send to all connections, it sends all data to 1 connection
-	* [x] Make guests[] and addresses[] interchangeable (line 63) -- Why would you? guests and addresses hold different data from each other.
-				- Bad explanation on my part, supposed to be settable as in you can configure
-				  a port and host without changing the script. Easily fixed by including a
-					input() call in the script, not implementing right now to make running
-					the script fast and easy
+
+18/7
+
+* README.md
+    * [ ] still needs updating on the about section
+* f/prats_server_script.py
+	* [ ] Look into [RSA](https://medium.com/@ismailakkila/black-hat-python-encrypt-and-decrypt-with-rsa-cryptography-bd6df84d65bc) encryption
+	* [ ] If you want to keep the contents of a chat the best way for that is to use a databse server
+	* [ ] Make a host/port input, you can default this to a certain value if you want testing to go easily
 
 ## Other Notes
