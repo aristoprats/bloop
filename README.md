@@ -47,6 +47,7 @@ En media goals:
 	- Now writes directly to Arduino LCD
 	[ ] - Has problems exiting, currently requires using 'ctrl+z' and then a 'kill -9' command from terminal
 	[ ] - Is now a good time to work on a "recall past messages function" ?
+	[ ] - Note to self: look into multiprocessing library, may be a cleaner solution than threading library
 
 * M/arduino_LCD_Reciever.ino
 	[ ] - Writing to LCD program is real slow and innefficient rn, works but can be improved
