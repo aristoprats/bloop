@@ -1,7 +1,15 @@
 ## About
 
-About connecting 2 microcontrollers together through computers through a VPN. That's the long term goal anyway.<br>
-The short term goal is more about making a chat application?
+Ultimate goal: To create a way to communicate between two physical devices (MCU LCDs) in a manner similar to an Instant Messaging app
+
+En media goals:
+1 [ ] Create a 2 way chat connection between two different computers
+2 [ ] Create a one way method to display incoming messages on the LCDs
+3 [ ] Create a two way method that can display incoming and send outgoing messages
+4 [ ] ???
+5 [ ] Displace Amazon in the global economy
+
+
 
 ## TODO
 
@@ -31,5 +39,17 @@ The short term goal is more about making a chat application?
 * NEW M/python_simple_serial_write.py
 	- Simple write to USB test script, sends a simple binary signal through USB port to arduino
 	- Requires pySerial library to be installed :(, will look for a more native path
-	* [ ] Currently can't find COM5 port, file path not available
+	* [x] Currently can't find COM5 port, file path not available
+		- Solved but currently requires knowing the write path and only works on pure linux or pure windows OS (not just bash running on windows)
+
+24/7
+* f/prats_server_script.py
+	- Now writes directly to Arduino LCD
+	[ ] - Has problems exiting, currently requires using 'ctrl+z' and then a 'kill -9' command from terminal
+	[ ] - Is now a good time to work on a "recall past messages function" ?
+
+* M/arduino_LCD_Reciever.ino
+	[ ] - Writing to LCD program is real slow and innefficient rn, works but can be improved
+	[ ] - Display format needs to be changed, kind of aids to read atm, most likely going to require a char limit
+
 ## Other Notes
