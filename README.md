@@ -3,11 +3,11 @@
 Ultimate goal: To create a way to communicate between two physical devices (MCU LCDs) in a manner similar to an Instant Messaging app
 
 En media goals:
-1 [ ] Create a 2 way chat connection between two different computers
-2 [ ] Create a one way method to display incoming messages on the LCDs
-3 [ ] Create a two way method that can display incoming and send outgoing messages
-4 [ ] ???
-5 [ ] Displace Amazon in the global economy
+1. [ ] Create a 2 way chat connection between two different computers
+2. [ ] Create a one way method to display incoming messages on the LCDs
+3. [ ] Create a two way method that can display incoming and send outgoing messages
+4. [ ] ???
+5. [ ] Displace Amazon in the global economy
 
 
 
