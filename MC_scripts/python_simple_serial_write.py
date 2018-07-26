@@ -2,7 +2,7 @@ import serial
 import time
 
 PORT = '/dev/ttyACM0' # REVIEW: figure out how to automate finding this dev path
-baud_rate = 9600      #data transmission rate, no idea why its called baud for MCUs
+baud_rate = 9600     #data transmission rate, no idea why its called baud for MCUs
     #IMPORTANT: This has to match the read and write rate on the MC chip
 '''Speed testing of data transmission at different bauds (data_size = 73 bytes) for Arduino
     115200 baud  --> 30s = 2.4333 bytes/second
@@ -12,12 +12,13 @@ baud_rate = 9600      #data transmission rate, no idea why its called baud for M
 ser = serial.Serial(PORT, baud_rate)
 print("Connection established to port: " + PORT)
 
-time.sleep(3)
+time.sleep(2)
 #needed because opening the serial port resets the MCU so it needs time to reinitialize
 
 #msg = input("Enter input: \n")
 
-msg = "\Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod"
+msg = str(input("Transmit Message >> "))
+print("Transmission Length >> " + str(len(msg)))
 msg_chopped = []
 
 def msg_chopper(message):
@@ -25,14 +26,19 @@ def msg_chopper(message):
     for letter in message:
         msg_chopped.append(letter)
 
-msg_chopped.clear()
-msg_chopper(msg)
+def main():
+    msg_chopped.clear()
+    msg_chopper(msg)
 
-for value in msg_chopped:
-    ser.write(bytes(value,'utf-8'))
-    print(value)
-    time.sleep(.5)
+    #ser.write(bytes("Z", 'utf-8'))
+    for value in msg_chopped:
+        ser.write(bytes(value,'utf-8'))
+        print(value)
+    #ser.write(bytes("Z", 'utf-8'))
 
 
+
+
+main()
 ser.close()
 quit()
