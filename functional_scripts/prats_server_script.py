@@ -17,8 +17,8 @@ except:
 buffer_size = 4096
 max_connections = 5
 addr = (host, port)
-ardPORT = '/dev/ttyACM1'
-baud_rate = 50000
+ardPORT = '/dev/ttyACM0'
+baud_rate = 20000
 
 guests = {}
 addresses = {}
@@ -66,7 +66,6 @@ def guest_side(guest):
             for byte in msg_decoded[:-2]:
                 #Writes msg to USB Port and displays on LCD
                 ser.write(bytes(byte, 'utf-8'))
-                time.sleep(.5)
             ser.write(bytes("|", "utf-8"))
                 #Adds a limiter to make seeing the break between msgs easier
                 # REVIEW: Clean up LCD display method later to make this better
