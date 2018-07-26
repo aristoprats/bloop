@@ -1,29 +1,44 @@
 #include <LiquidCrystal.h>
 
 //Pin assignments
+    //LCD Pin assignments
 #define rs 12
 #define en 11
 #define d4 5
 #define d5 4
 #define d6 3
 #define d7 2
-#define potentiometer A0
 #define V0 10
+
+#define potentiometer A0
 #define button 13
-#define LEDG 9
+
+#define LEDB 9
 #define LEDR 8
 
 //Globals
 int potread = 0;
-int position[] = {0,0};
+
+int top_len = 0;
+int bot_len = 0;
+
+int x = 0;
+int y = 0;
+
+String string_top = "";
+String string_bot = "";
+String string_current = "";
+String string_last = "";
+
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 void setup() {
-  // put your setup code here, to run once:
+
   pinMode(potentiometer, INPUT);
-  pinMode(button, INPUT_PULLUP);
+  pinMode(button, INPUT);
+
   pinMode(V0, OUTPUT);
-  pinMode(LEDG, OUTPUT);
+  pinMode(LEDB, OUTPUT);
   pinMode(LEDR, OUTPUT);
 
   digitalWrite(LEDR, LOW);
@@ -40,15 +55,66 @@ void setup() {
   digitalWrite(LEDR, HIGH);
 }
 
+void loop(){
+    if (Serial.available()){
+    char val = Serial.read();
 
-
-
-void loop() {
-  // put your main code here, to run repeatedly:
-    digitalWrite(LEDG,LOW);
-    if (Serial.available() > 0){
-      char msg = Serial.read();
-      Serial.println(msg);
+    if (y <= 1 && x <= 15){
+      lcd.setCursor(x,y);
+      x++;
+    }
+    else if (y == 0 && x > 15){
+      x = 0;
+      y = 1;
+      lcd.setCursor(x,y);
+      x++;
+    }
+    else if (y == 1 && x > 15){
+      x = 0;
+      y = 0;
+      while (digitalRead(button) == LOW){
+        //do nothing
+        digitalWrite(LEDR, LOW);
+      }
+      digitalWrite(LEDR, HIGH);
+      lcd.clear();
     }
 
+    lcd.print(val);
+
+  }
+
+  /*
+  if (string_current.equals(string_last)){
+    //do nothing
+  }
+  else{
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(string_top);
+    lcd.setCursor(0,1);
+    lcd.print(string_bot);
+
+    String string_top = '';
+    String string_bot = '';
+    //Serial.println("PRINTING TO LCD");
+  }
+
+  string_last = string_current;
+  */
+  /*
+    while (Serial.available()){
+      char val = Serial.read();
+      if (string_top.length() < 15){
+        string_top += val;
+      }
+      else {
+        string_bot += val;
+      }
+    }
+    lcd.setCursor(0,0);
+    lcd.print(string_top);
+    lcd.setCursor(0,1);
+    lcd.print(string_bot);
+  */
 }
