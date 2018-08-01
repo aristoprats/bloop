@@ -18,7 +18,7 @@ buffer_size = 4096
 max_connections = 5
 addr = (host, port)
 ardPORT = '/dev/ttyACM0'
-baud_rate = 20000
+baud_rate = int(input("Baud Rate >> "))
 
 guests = {}
 addresses = {}
@@ -94,7 +94,11 @@ def close_server():
     while True:
         server_input = str(input("Host CMD >> "))
         if (server_input.lower() == "k"):
+            ## DEBUG: why wont this script exit???
             print("Exit command accepted")
+            for item in guests:
+                print(item)
+
             s.close()
             ser.close()
             sys.exit()
@@ -128,6 +132,7 @@ if __name__ == '__main__':
     print("Waiting for connections")
     accept_thread = Thread(target= create_connection)
     exit_thread   = Thread(target= close_server)
+    accept_thread.daemon = True
     accept_thread.start()
     exit_thread.start()
     accept_thread.join()
