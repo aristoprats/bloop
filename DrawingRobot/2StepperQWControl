@@ -1,29 +1,20 @@
-#include <AccelStepper.h>
 #include <LiquidCrystal.h>
+#include <AccelStepper.h>
 
 #define HALFSTEP 8
-/*
-4600 steps per full rotation of motor pin (1150 steps/quadrant)
-fastest speed on 16Hz core is 4000 steps per second
-setAcceleration is memory intensive
 
-documentations says:
-43163 steps/second on runSpeed()
-16214 steps/second on run()
-*/
+// motor pins
+#define motorPin1  0     // IN1 on the ULN2003 driver 1
+#define motorPin2  1     // IN2 on the ULN2003 driver 1
+#define motorPin3  2     // IN3 on the ULN2003 driver 1
+#define motorPin4  3     // IN4 on the ULN2003 driver 1
 
-// Motor pin definitions
-#define LmotorPin1  0     // IN1 on the ULN2003 driver 1
-#define LmotorPin2  1     // IN2 on the ULN2003 driver 1
-#define LmotorPin3  2     // IN3 on the ULN2003 driver 1
-#define LmotorPin4  3     // IN4 on the ULN2003 driver 1
+#define motorPin5  7     // IN1 on the ULN2003 driver 2
+#define motorPin6  6     // IN2 on the ULN2003 driver 2
+#define motorPin7  5    // IN3 on the ULN2003 driver 2
+#define motorPin8  4    // IN4 on the ULN2003 driver 2
 
-#define RmotorPin1 7
-#define RmotorPin2 6
-#define RmotorPin3 5
-#define RmotorPin4 4
-
-//LCD definitions
+//LCD Pin assignments
 #define rs 13
 #define en 12
 #define d4 11
@@ -31,37 +22,34 @@ documentations says:
 #define d6 9
 #define d7 8
 
-#define potentiometer A5
-
-// Initialize motors
-AccelStepper Lstepper(HALFSTEP, LmotorPin1, LmotorPin2, LmotorPin3, LmotorPin4);
-AccelStepper Rstepper(HALFSTEP, RmotorPin1, RmotorPin2, RmotorPin3, RmotorPin4);
-
+// Initialize Stepper Motors
+AccelStepper Lstepper(HALFSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
+AccelStepper Rstepper(HALFSTEP, motorPin5, motorPin7, motorPin6, motorPin8);
 // Initialize LCD
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
+
+
+// variables
+int turnSteps = 2100; // number of steps for a 90 degree turn
+int lineSteps = -6600; //number of steps to drive straight
+int stepperSpeed = 1000; //speed of the stepper (steps per second)
+int steps1 = 0; // keep track of the step count for motor 1
+int steps2 = 0; // keep track of the step count for motor 2
+long tick = 0;
+
+boolean turn1 = false; //keep track if we are turning or going straight next
+boolean turn2 = false; //keep track if we are turning or going straight next
+
 void setup() {
-  pinMode(potentiometer, INPUT);
-  Serial.begin(9600);
 
-  lcd.begin(16,2);
-  lcd.setCursor(0,0);
-  lcd.clear();
+  Lstepper.setMaxSpeed(2000.0);
+  Lstepper.move(1);  // I found this necessary
+  Lstepper.setSpeed(stepperSpeed);
 
-  Lstepper.setMaxSpeed(1000.0);
-  Lstepper.setAcceleration(100.0);
-  Lstepper.setSpeed(200);
-  Lstepper.move(1);
-
-  Rstepper.setMaxSpeed(1000.0);
-  Rstepper.setAcceleration(100.0);
-  Rstepper.setSpeed(200);
-  Rstepper.move(1);
-}
-
-int stepper_goal(){
-  int pot = analogRead(potentiometer);
-  return (map(pot, 0, 1023, -1150, 1150 ));
+  Rstepper.setMaxSpeed(2000.0);
+  Rstepper.move(-1);  // I found this necessary
+  Rstepper.setSpeed(stepperSpeed);
 
 }
 
@@ -69,26 +57,50 @@ void LCD_print_loop(){
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Pos:");
-  lcd.setCursor(0,1);
-  lcd.print(stepper_goal());
+  //lcd.setCursor(0,1);
+  //lcd.print(stepper_goal());
   lcd.setCursor(5,0);
   lcd.print(Lstepper.currentPosition());
   lcd.setCursor(5,1);
   lcd.print(Rstepper.currentPosition());
-  delay(10);
 }
-
 
 void loop() {
 
+  if (steps1 == 0) {
+    int target = 0;
+    if (turn1 == true) {
+      target = turnSteps;
+    }
 
+    else {
+      target = lineSteps;
+    }
 
+    Lstepper.move(target);
+    Lstepper.setSpeed(stepperSpeed);
+    turn1 = !turn1;
+  }
 
+  if (steps2 == 0) {
+    int target = 0;
+    if (turn2 == true) {
+      target = turnSteps;
+    }
 
+    else {
+      target = -lineSteps;
+    }
 
+    Rstepper.move(target);
+    Rstepper.setSpeed(stepperSpeed);
+    turn2 = !turn2;
+  }
 
+  steps1 = Lstepper.distanceToGo();
+  steps2 = Rstepper.distanceToGo();
 
-
-  LCD_print_loop();
+  Lstepper.runSpeedToPosition();
+  Rstepper.runSpeedToPosition();
 
 }
