@@ -1,0 +1,94 @@
+#include <AccelStepper.h>
+#include <LiquidCrystal.h>
+
+#define HALFSTEP 8
+/*
+4600 steps per full rotation of motor pin (1150 steps/quadrant)
+fastest speed on 16Hz core is 4000 steps per second
+setAcceleration is memory intensive
+
+documentations says:
+43163 steps/second on runSpeed()
+16214 steps/second on run()
+*/
+
+// Motor pin definitions
+#define LmotorPin1  0     // IN1 on the ULN2003 driver 1
+#define LmotorPin2  1     // IN2 on the ULN2003 driver 1
+#define LmotorPin3  2     // IN3 on the ULN2003 driver 1
+#define LmotorPin4  3     // IN4 on the ULN2003 driver 1
+
+#define RmotorPin1 7
+#define RmotorPin2 6
+#define RmotorPin3 5
+#define RmotorPin4 4
+
+//LCD definitions
+#define rs 13
+#define en 12
+#define d4 11
+#define d5 10
+#define d6 9
+#define d7 8
+
+#define potentiometer A5
+
+// Initialize motors
+AccelStepper Lstepper(HALFSTEP, LmotorPin1, LmotorPin2, LmotorPin3, LmotorPin4);
+AccelStepper Rstepper(HALFSTEP, RmotorPin1, RmotorPin2, RmotorPin3, RmotorPin4);
+
+// Initialize LCD
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+void setup() {
+  pinMode(potentiometer, INPUT);
+  Serial.begin(9600);
+
+  lcd.begin(16,2);
+  lcd.setCursor(0,0);
+  lcd.clear();
+
+  Lstepper.setMaxSpeed(1000.0);
+  Lstepper.setAcceleration(100.0);
+  Lstepper.setSpeed(200);
+  Lstepper.move(1);
+
+  Rstepper.setMaxSpeed(1000.0);
+  Rstepper.setAcceleration(100.0);
+  Rstepper.setSpeed(200);
+  Rstepper.move(1);
+}
+
+int stepper_goal(){
+  int pot = analogRead(potentiometer);
+  return (map(pot, 0, 1023, -1150, 1150 ));
+
+}
+
+void LCD_print_loop(){
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Pos:");
+  lcd.setCursor(0,1);
+  lcd.print(stepper_goal());
+  lcd.setCursor(5,0);
+  lcd.print(Lstepper.currentPosition());
+  lcd.setCursor(5,1);
+  lcd.print(Rstepper.currentPosition());
+  delay(10);
+}
+
+
+void loop() {
+
+
+
+
+
+
+
+
+
+  LCD_print_loop();
+
+}
