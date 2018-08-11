@@ -1,106 +1,34 @@
-#include <LiquidCrystal.h>
 #include <AccelStepper.h>
+#include <MultiStepper.h>
 
-#define HALFSTEP 8
+AccelStepper stepper1(AccelStepper::FULL4WIRE, 3, 4, 5, 6);
+AccelStepper stepper2(AccelStepper::FULL4WIRE, 7, 8, 9, 10);
 
-// motor pins
-#define motorPin1  0     // IN1 on the ULN2003 driver 1
-#define motorPin2  1     // IN2 on the ULN2003 driver 1
-#define motorPin3  2     // IN3 on the ULN2003 driver 1
-#define motorPin4  3     // IN4 on the ULN2003 driver 1
-
-#define motorPin5  7     // IN1 on the ULN2003 driver 2
-#define motorPin6  6     // IN2 on the ULN2003 driver 2
-#define motorPin7  5    // IN3 on the ULN2003 driver 2
-#define motorPin8  4    // IN4 on the ULN2003 driver 2
-
-//LCD Pin assignments
-#define rs 13
-#define en 12
-#define d4 11
-#define d5 10
-#define d6 9
-#define d7 8
-
-// Initialize Stepper Motors
-AccelStepper Lstepper(HALFSTEP, motorPin1, motorPin3, motorPin2, motorPin4);
-AccelStepper Rstepper(HALFSTEP, motorPin5, motorPin7, motorPin6, motorPin8);
-// Initialize LCD
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-
-
-
-// variables
-int turnSteps = 2100; // number of steps for a 90 degree turn
-int lineSteps = -6600; //number of steps to drive straight
-int stepperSpeed = 1000; //speed of the stepper (steps per second)
-int steps1 = 0; // keep track of the step count for motor 1
-int steps2 = 0; // keep track of the step count for motor 2
-long tick = 0;
-
-boolean turn1 = false; //keep track if we are turning or going straight next
-boolean turn2 = false; //keep track if we are turning or going straight next
+MultiStepper steppers;
+  //Limited to ten motors max, 5 motors efficiently
+int delayTime = 0;
 
 void setup() {
+  stepper1.setMaxSpeed(100);
+  stepper2.setMaxSpeed(100);
 
-  Lstepper.setMaxSpeed(2000.0);
-  Lstepper.move(1);  // I found this necessary
-  Lstepper.setSpeed(stepperSpeed);
 
-  Rstepper.setMaxSpeed(2000.0);
-  Rstepper.move(-1);  // I found this necessary
-  Rstepper.setSpeed(stepperSpeed);
-
+  steppers.addStepper(stepper1);
+  steppers.addStepper(stepper2);
 }
-
-void LCD_print_loop(){
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("Pos:");
-  //lcd.setCursor(0,1);
-  //lcd.print(stepper_goal());
-  lcd.setCursor(5,0);
-  lcd.print(Lstepper.currentPosition());
-  lcd.setCursor(5,1);
-  lcd.print(Rstepper.currentPosition());
-}
-
 void loop() {
+  long positions[2]; // Array of desired stepper positions
 
-  if (steps1 == 0) {
-    int target = 0;
-    if (turn1 == true) {
-      target = turnSteps;
-    }
+  positions[0] = 1000;
+  positions[1] = 50;
+  steppers.moveTo(positions);
+  steppers.runSpeedToPosition(); // Blocks until all are in position
+  delay(delayTime);
 
-    else {
-      target = lineSteps;
-    }
-
-    Lstepper.move(target);
-    Lstepper.setSpeed(stepperSpeed);
-    turn1 = !turn1;
-  }
-
-  if (steps2 == 0) {
-    int target = 0;
-    if (turn2 == true) {
-      target = turnSteps;
-    }
-
-    else {
-      target = -lineSteps;
-    }
-
-    Rstepper.move(target);
-    Rstepper.setSpeed(stepperSpeed);
-    turn2 = !turn2;
-  }
-
-  steps1 = Lstepper.distanceToGo();
-  steps2 = Rstepper.distanceToGo();
-
-  Lstepper.runSpeedToPosition();
-  Rstepper.runSpeedToPosition();
-
+  // Move to a different coordinate
+  positions[0] = -100;
+  positions[1] = 100;
+  steppers.moveTo(positions);
+  steppers.runSpeedToPosition(); // Blocks until all are in position
+  delay(delayTime);
 }
